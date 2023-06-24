@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/golang/groupcache"
 	"github.com/sashabaranov/go-openai"
@@ -46,11 +48,15 @@ func GetChatData(appKey, content string) string {
 
 // 从openAI接口取数据
 func chatCompletion(key, content string) (string, error) {
-	client := openai.NewClient(key)
+
+	cfg := openai.DefaultConfig(key)
+	cfg.HTTPClient = &http.Client{Timeout: 4500 * time.Millisecond} // <= add a custom http client
+	client := openai.NewClientWithConfig(cfg)
 	rsp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:     openai.GPT3Dot5Turbo,
+			Model:     openai.GPT3Dot5Turbo0301,
+			Stream:    false,
 			MaxTokens: 2048, // 限制最大返回token，提速
 			Messages: []openai.ChatCompletionMessage{
 				{
@@ -61,10 +67,10 @@ func chatCompletion(key, content string) (string, error) {
 		},
 	)
 	if err != nil {
-		return "", err
+		return "你的问题太复杂了,我可能要再想一会.", err
 	}
 	if len(rsp.Choices) == 0 {
-		return "", fmt.Errorf("Get empty response")
+		return "你的问题太难了,我可能不会了,太难了.", fmt.Errorf("Get empty response")
 	}
 	return rsp.Choices[0].Message.Content, nil
 }

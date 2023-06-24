@@ -55,22 +55,31 @@ func wxChatMessage(c *gin.Context) {
 		fmt.Println("Error decoding message:", err)
 		return
 	}
-
-	// Get response from OpenAI
-	log.Println("request=", msg.Content)
-	config := GetConfig()
-	content := GetChatData(config.Key, msg.Content)
-
-	log.Println("response=", content)
-
 	// 构造回复消息
 	resp := &Message{
 		ToUserName:   msg.FromUserName,
 		FromUserName: msg.ToUserName,
 		CreateTime:   msg.CreateTime,
 		MsgType:      "text",
-		Content:      content,
+		Content:      "",
 	}
+	//只处理text类型的消息
+	if "text" != msg.MsgType {
+		resp.Content = fmt.Sprintf("%v类型目前不支持,抱歉.你可以发文本给我吗?\n", msg.Content)
+		// 返回响应
+		c.Writer.Header().Set("Content-Type", "application/xml")
+		respXML, _ := xml.Marshal(resp)
+		c.Writer.Write(respXML)
+		return
+	}
+
+	// Get response from OpenAI
+	log.Printf("request=%v\n", msg.Content)
+	config := GetConfig()
+	content := GetChatData(config.Key, msg.Content)
+
+	log.Println("response=", content)
+	resp.Content = content
 	respXML, err := xml.Marshal(resp)
 	if err != nil {
 		fmt.Println("Error encoding message:", err)
