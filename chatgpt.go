@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -22,7 +21,6 @@ func init() {
 			elems := strings.Split(key, "______")
 			value, err := chatCompletion(elems[0], elems[1])
 			if err != nil {
-				log.Printf("chatCompletion Err=%v\n", err)
 				return err
 			}
 			dest.SetString(value)
@@ -41,7 +39,6 @@ func GetChatData(appKey, content string) string {
 	var value string
 	err := cache.Get(nil, key, groupcache.StringSink(&value))
 	if err != nil {
-		log.Fatalf("cache.Get%v\n", err.Error())
 		return "你的问题太复杂了,你可以再问我一遍吗."
 	}
 	return value
