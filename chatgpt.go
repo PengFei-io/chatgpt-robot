@@ -46,9 +46,10 @@ func GetChatData(appKey, content string) string {
 
 // 从openAI接口取数据
 func chatCompletion(key, content string) (string, error) {
-
+	config := GetConfig()
+	duration := time.Duration(config.Timeout) * time.Second
 	cfg := openai.DefaultConfig(key)
-	cfg.HTTPClient = &http.Client{Timeout: 4500 * time.Millisecond} // <= add a custom http client
+	cfg.HTTPClient = &http.Client{Timeout: duration} // <= add a custom http client
 	client := openai.NewClientWithConfig(cfg)
 	rsp, err := client.CreateChatCompletion(
 		context.Background(),

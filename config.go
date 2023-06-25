@@ -10,9 +10,10 @@ import (
 
 // Config 配置内容
 type Config struct {
-	Key   string
-	Port  int32
-	Token string
+	Key     string
+	Port    int32
+	Token   string
+	Timeout int32
 }
 
 var gConfig atomic.Value
@@ -45,5 +46,6 @@ func ShowConfig() {
 	log.Printf("OpenAIKey=%v\n", config.Key)
 	log.Printf("Token =%v\n", config.Token)
 	log.Printf("port=%v\n", config.Port)
+	log.Printf("timeout=%v\n", config.Timeout)
 	log.Println("====================================================")
 }
