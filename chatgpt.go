@@ -39,6 +39,7 @@ func GetChatData(appKey, content string) string {
 	var value string
 	err := cache.Get(nil, key, groupcache.StringSink(&value))
 	if err != nil {
+		fmt.Println(err.Error())
 		return "你的问题太复杂了,你可以再问我一遍吗."
 	}
 	return value
