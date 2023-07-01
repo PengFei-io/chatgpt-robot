@@ -1,7 +1,8 @@
-package main
+package config
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"sync/atomic"
 
@@ -10,11 +11,14 @@ import (
 
 // Config 配置内容
 type Config struct {
-	Key     string
-	Port    int32
-	Token   string
-	Timeout int32
+	Key        string
+	Port       int32
+	Token      string
+	Timeout    int32
+	SessionTTL int32 `yaml:"session_ttl"`
 }
+
+var Prompt string
 
 var gConfig atomic.Value
 
@@ -32,6 +36,11 @@ func LoadConfig() {
 		panic(fmt.Errorf("解析配置文件失败: %s", err))
 	}
 	gConfig.Store(config)
+	prompt, err := ioutil.ReadFile("prompt.txt")
+	if err != nil {
+		log.Fatalf("读取配置文件失败，请检查配置文件 `prompt.txt` 的配置, 错误信息: %+v\n", err)
+	}
+	Prompt = string(prompt)
 }
 
 // GetConfig 获取配置

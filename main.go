@@ -1,6 +1,7 @@
 package main
 
 import (
+	config2 "chatgpt-robot/config"
 	"fmt"
 	"log"
 
@@ -9,18 +10,18 @@ import (
 
 func main() {
 	// 加载配置
-	LoadConfig()
-	ShowConfig()
+	config2.LoadConfig()
+	config2.ShowConfig()
 
 	r := gin.New()
 	// 微信公众号接口
 	r.GET("/wechat", wxCheckSign)
 	r.POST("/wechat", wxChatMessage)
 
-	// iPhone 捷径接口
-	r.POST("/chatgpt/api/completions", completions)
+	// 捷径接口
+	//r.POST("/chatgpt/api/completions", completions)
 
-	config := GetConfig()
+	config := config2.GetConfig()
 	if err := r.Run(fmt.Sprintf(":%v", config.Port)); err != nil {
 		log.Fatal("failed run app: ", err)
 	}

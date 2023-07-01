@@ -1,7 +1,10 @@
 package main
 
 import (
+	config2 "chatgpt-robot/config"
+	"chatgpt-robot/utils/intention"
 	"crypto/sha1"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -32,13 +35,13 @@ type Message struct {
 
 // 处理iPhone捷径请求
 func completions(c *gin.Context) {
-	key := c.GetHeader("Authorization")
+	//key := c.GetHeader("Authorization")
 
 	request := &Request{}
 	c.BindJSON(request)
 
 	log.Println("request=", request.Content)
-	content := GetChatData(key, request.Content)
+	content := intention.IntentHandle(request.Content, "")
 
 	c.JSON(http.StatusOK, gin.H{
 		"content": content,
@@ -55,6 +58,8 @@ func wxChatMessage(c *gin.Context) {
 		fmt.Println("Error decoding message:", err)
 		return
 	}
+	marshalMsg, _ := json.Marshal(msg)
+	fmt.Println(string(marshalMsg))
 	// 构造回复消息
 	resp := &Message{
 		ToUserName:   msg.FromUserName,
@@ -65,18 +70,17 @@ func wxChatMessage(c *gin.Context) {
 	}
 	//只处理text类型的消息
 	if "text" != msg.MsgType {
-		resp.Content = fmt.Sprintf("%v类型目前不支持,抱歉.你可以发文本给我吗?\n", msg.Content)
-		// 返回响应
-		c.Writer.Header().Set("Content-Type", "application/xml")
-		respXML, _ := xml.Marshal(resp)
-		c.Writer.Write(respXML)
+		//resp.Content = fmt.Sprintf("%v类型目前不支持,抱歉.你可以发文本给我吗?\n", msg.Content)
+		//// 返回响应
+		//c.Writer.Header().Set("Content-Type", "application/xml")
+		//respXML, _ := xml.Marshal(resp)
+		//c.Writer.Write(respXML)
 		return
 	}
 
 	// Get response from OpenAI
 	log.Printf("request=%v\n", msg.Content)
-	config := GetConfig()
-	content := GetChatData(config.Key, msg.Content)
+	content := intention.IntentHandle(msg.FromUserName, msg.Content)
 
 	log.Println("response=", content)
 	resp.Content = content
@@ -98,7 +102,7 @@ func wxCheckSign(c *gin.Context) {
 	echostr := c.Query("echostr")
 
 	// 将token、timestamp、nonce三个参数进行字典序排序
-	config := GetConfig()
+	config := config2.GetConfig()
 	strs := sort.StringSlice{config.Token, timestamp, nonce}
 	strs.Sort()
 
