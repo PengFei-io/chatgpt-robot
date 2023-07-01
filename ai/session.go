@@ -43,7 +43,7 @@ func (c *Chat) Clear(user string) {
 	now := time.Now()
 	result := []*UserMessage{}
 	for _, userMessage := range c.UserMessagesMap[user] {
-		if now.Sub(userMessage.Time) < time.Duration(getConfig.SessionTTL)*time.Minute {
+		if now.Sub(userMessage.Time) < time.Duration(getConfig.SessionTtl)*time.Minute {
 			result = append(result, userMessage)
 		}
 	}

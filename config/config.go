@@ -15,7 +15,7 @@ type Config struct {
 	Port       int32
 	Token      string
 	Timeout    int32
-	SessionTTL int32 `yaml:"session_ttl"`
+	SessionTtl int32 `mapstructure:"session_ttl"`
 }
 
 var Prompt string
@@ -56,5 +56,6 @@ func ShowConfig() {
 	log.Printf("Token =%v\n", config.Token)
 	log.Printf("port=%v\n", config.Port)
 	log.Printf("timeout=%v\n", config.Timeout)
+	log.Printf("SessionTtl=%v\n", config.SessionTtl)
 	log.Println("====================================================")
 }

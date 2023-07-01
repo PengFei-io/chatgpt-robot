@@ -4,7 +4,6 @@ import (
 	config2 "chatgpt-robot/config"
 	"chatgpt-robot/utils/intention"
 	"crypto/sha1"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -58,8 +57,6 @@ func wxChatMessage(c *gin.Context) {
 		fmt.Println("Error decoding message:", err)
 		return
 	}
-	marshalMsg, _ := json.Marshal(msg)
-	fmt.Println(string(marshalMsg))
 	// 构造回复消息
 	resp := &Message{
 		ToUserName:   msg.FromUserName,
