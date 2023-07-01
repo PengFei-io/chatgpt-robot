@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+  robot:
+    #    镜像
+    image: robot:1.0
+    hostname: robot
+    container_name: robot
+    privileged: true
+    ports:
+      #   镜像映射
+      - 80:80
+    environment:
+      #   环境变量
+      MYSQL_ROOT_PASSWORD: 123456
+    #   镜像挂载
+#    volumes:
+#      - static:/app/static/
+#
+#volumes:
+#  static:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      o: bind
+#      device: /Users/pf/dev/docker/robot/static/
