@@ -79,10 +79,7 @@ func wxChatMessage(c *gin.Context) {
 	}
 
 	// Get response from OpenAI
-	log.Printf("request=%v\n", msg.Content)
 	content := intention.IntentHandle(msg.FromUserName, msg.Content)
-
-	log.Println("response=", content)
 	resp.Content = content
 	respXML, err := xml.Marshal(resp)
 	if err != nil {
