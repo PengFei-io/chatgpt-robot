@@ -18,7 +18,7 @@ const weatherApi = "https://devapi.qweather.com/v7/weather/now?key=9b83895fef154
 
 func init() {
 	// 打开CSV文件
-	file, err := os.Open("./China-City-List-latest.csv")
+	file, err := os.Open("./static/China-City-List-latest.csv")
 	if err != nil {
 		panic(err)
 	}

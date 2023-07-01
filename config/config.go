@@ -36,7 +36,7 @@ func LoadConfig() {
 		panic(fmt.Errorf("解析配置文件失败: %s", err))
 	}
 	gConfig.Store(config)
-	prompt, err := ioutil.ReadFile("prompt.txt")
+	prompt, err := ioutil.ReadFile("./static/prompt.txt")
 	if err != nil {
 		log.Fatalf("读取配置文件失败，请检查配置文件 `prompt.txt` 的配置, 错误信息: %+v\n", err)
 	}
