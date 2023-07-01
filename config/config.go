@@ -25,7 +25,7 @@ var gConfig atomic.Value
 // LoadConfig 加载配置
 func LoadConfig() {
 	// 读取配置文件
-	viper.SetConfigFile("config.yaml")
+	viper.SetConfigFile("./static/config.yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("读取配置文件失败: %s", err))
 	}
