@@ -27,7 +27,7 @@ func CreateChatCompletion(ctx context.Context, messages []openai.ChatCompletionM
 	apiKey := getConfig.Key
 	client := getOpenAIClient(apiKey)
 	resp, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
-		Model:    openai.GPT3Dot5Turbo0301,
+		Model:    getConfig.Model,
 		Messages: messages,
 	})
 	if err != nil {

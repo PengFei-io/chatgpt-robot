@@ -1,5 +1,6 @@
 # 这是一个示例配置文件
-key: sk-xxxx  # openAI的key, 在https://platform.openai.com/account/api-keys获取, 仅用于微信公众号
+model: sk-xxxx  # openAI的模型名 openai.GPT3Ada
+key: sk-xxxx  # openAI的key
 port: 80    # 服务运行的端口
 token: 1234567890  # 微信公众号后台自定义的token
 timeout: 120 #GPT访问超时时间

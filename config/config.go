@@ -11,6 +11,7 @@ import (
 
 // Config 配置内容
 type Config struct {
+	Model      string `mapstructure:"model"`
 	Key        string
 	Port       int32
 	Token      string
