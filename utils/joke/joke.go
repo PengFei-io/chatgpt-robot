@@ -7,7 +7,7 @@ import (
 )
 
 // GetJokeList 对接的api https://www.mxnzp.com/doc/list
-func GetJokeList() string {
+func GetJokeList(c int) string {
 
 	jokeApi := "https://www.mxnzp.com/api/jokes/list/random?app_id=qmnwjnimnkpnonom&app_secret=Nm5ZYk1JQVB3TW5lTittU0l1dzYzUT09"
 	request := &netutil.HttpRequest{
@@ -29,8 +29,12 @@ func GetJokeList() string {
 	jokeSlice := make([]string, 0)
 	contentSlice := ret["data"]
 	for seq, v := range contentSlice.([]interface{}) {
+		nextSeq := seq + 1
+		if nextSeq > c {
+			break
+		}
 		content := v.(map[string]interface{})["content"]
-		jokeSlice = append(jokeSlice, fmt.Sprintf("笑话%d:%s \n", seq+1, content.(string)))
+		jokeSlice = append(jokeSlice, fmt.Sprintf("笑话%d:%s \n", nextSeq, content.(string)))
 	}
 	return strings.Join(jokeSlice, "\n")
 }

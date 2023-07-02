@@ -22,7 +22,7 @@ func IntentHandle(fromUserName string, content string) string {
 		return weather.GetWeather(content)
 	} else if strings.Contains(content, "@笑话") {
 		fmt.Println("hit_intent_笑话")
-		return joke.GetJokeList()
+		return joke.GetJokeList(5)
 	}
 	fmt.Println("hit_intent_chat")
 	ctx := context.Background()
