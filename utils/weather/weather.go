@@ -12,13 +12,21 @@ import (
 	"time"
 )
 
-var cityMap map[string]string
+type Weather struct {
+	City     string
+	CityCode string
+	Country  string
+	Province string
+}
+
+var citySlice []Weather
 
 const weatherApi = "https://devapi.qweather.com/v7/weather/now?key=9b83895fef154e9bb02cb567c0817b4e&location=%s&lang=zh"
 
 func init() {
 	// 打开CSV文件
-	file, err := os.Open("./static/China-City-List-latest.csv")
+	//file, err := os.Open("./static/China-City-List-latest.csv")
+	file, err := os.Open("/Users/pf/dev/IdeaProjects/go/chatgpt-robot/static/China-City-List-latest.csv")
 	if err != nil {
 		panic(err)
 	}
@@ -35,54 +43,62 @@ func init() {
 		panic(err)
 	}
 	// 打印CSV文件中的数据
-	cityMap = make(map[string]string)
+	citySlice = make([]Weather, 0)
 	for _, record := range records {
-		cityMap[record[2]] = record[0]
+		w := Weather{record[2], record[0], record[7], record[9]}
+		citySlice = append(citySlice, w)
 	}
 }
 
 // GetCityCode 获取城市的ID
-func GetCityCode(city string) (string, string) {
-	for k, v := range cityMap {
-		if strings.Contains(city, k) {
-			return k, v
+func GetCityCode(city string) []Weather {
+	weatherSlice := make([]Weather, 0)
+	for _, v := range citySlice {
+		if strings.Contains(city, v.City) {
+			weatherSlice = append(weatherSlice, v)
 		}
 	}
-	return "北京", cityMap["北京"]
+	return weatherSlice
 }
 
 // GetCityWeather 获取城市的天气
-func GetCityWeather(city string) (string, map[string]any) {
+func GetCityWeather(city string) []map[string]map[string]any {
 	// 创建一个http.Request对象
-	hitCity, cityCode := GetCityCode(city)
-	req, err := http.NewRequest("GET", fmt.Sprintf(weatherApi, cityCode), nil)
-	if err != nil {
-		log.Println(err)
-	}
-	// 添加请求头
-	req.Header.Set("User-Agent", "Mozilla/5.0")
+	weatherSlice := GetCityCode(city)
+	weatherRetSlice := make([]map[string]map[string]any, 0)
+	for _, w := range weatherSlice {
+		m := make(map[string]map[string]any)
+		req, err := http.NewRequest("GET", fmt.Sprintf(weatherApi, w.CityCode), nil)
+		if err != nil {
+			log.Println(err)
+		}
+		// 添加请求头
+		req.Header.Set("User-Agent", "Mozilla/5.0")
 
-	// 创建一个http.Client对象
-	client := &http.Client{}
+		// 创建一个http.Client对象
+		client := &http.Client{}
 
-	// 发送HTTP请求
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Println(err)
-	}
-	defer resp.Body.Close()
+		// 发送HTTP请求
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Println(err)
+		}
+		defer resp.Body.Close()
 
-	// 读取响应内容
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
+		// 读取响应内容
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		var weatherMap map[string]any
+		err = json.Unmarshal(body, &weatherMap)
+		if err != nil {
+			log.Println(err)
+		}
+		m[w.Country+" "+w.Province+" "+w.City] = weatherMap
+		weatherRetSlice = append(weatherRetSlice, m)
 	}
-	var weatherMap map[string]any
-	err = json.Unmarshal(body, &weatherMap)
-	if err != nil {
-		log.Println(err)
-	}
-	return hitCity, weatherMap
+	return weatherRetSlice
 }
 
 // formatWeatherPrompts 格式化天气的提示语
@@ -108,8 +124,15 @@ func formatWeatherPrompts(hitCity string, weatherMap map[string]any) string {
 
 // GetWeather 获取城市天气
 func GetWeather(city string) string {
-	hitCity, weatherMap := GetCityWeather(city)
-	return formatWeatherPrompts(hitCity, weatherMap)
+	weatherSlice := GetCityWeather(city)
+	var weatherPrompts []string
+	for _, s := range weatherSlice {
+		for hitCity, weatherMap := range s {
+			weatherPrompts = append(weatherPrompts, formatWeatherPrompts(hitCity, weatherMap))
+		}
+	}
+	return strings.Join(weatherPrompts, "\n")
+	//return formatWeatherPrompts(hitCity, weatherMap)
 }
 
 func FormatDateStr(input string) string {

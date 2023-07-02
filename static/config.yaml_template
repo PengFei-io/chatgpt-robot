@@ -1,5 +1,5 @@
 # 这是一个示例配置文件
-model: sk-xxxx  # openAI的模型名 openai.GPT3Ada
+model: gpt-3.5-turbo-0301
 key: sk-xxxx  # openAI的key
 port: 80    # 服务运行的端口
 token: 1234567890  # 微信公众号后台自定义的token
